@@ -3,6 +3,8 @@
 import 'package:e_commerce_app/pages/auth/register.dart';
 import 'package:flutter/material.dart';
 
+import '../home/home.dart';
+
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
 
@@ -23,12 +25,6 @@ class _LoginState extends State<Login> {
           padding: const EdgeInsets.all(10.0),
           child: Column(
             children: [
-              Container(
-                height: 200,
-                decoration: BoxDecoration(
-                    image: DecorationImage(
-                        image: AssetImage("assets/Copyright-pana.png"))),
-              ),
               Image.asset(
                 "assets/Copyright-pana.png",
                 height: 200,
@@ -59,8 +55,12 @@ class _LoginState extends State<Login> {
               Container(
                   height: 60,
                   width: 160,
-                  child:
-                      ElevatedButton(onPressed: () {}, child: Text("Login"))),
+                  child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (context) => Home()));
+                      },
+                      child: Text("Login"))),
               SizedBox(height: 10),
               Container(
                   height: 60,

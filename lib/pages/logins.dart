@@ -1,5 +1,6 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:e_commerce_app/pages/home/home.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/container.dart';
@@ -53,7 +54,12 @@ class _LoginsState extends State<Logins> {
             Container(
                 height: 60,
                 width: 200,
-                child: ElevatedButton(onPressed: () {}, child: Text("Login"))),
+                child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (context) => Home()));
+                    },
+                    child: Text("Login"))),
             SizedBox(height: 10),
             Container(
                 height: 60,
