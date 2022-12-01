@@ -6,6 +6,8 @@ import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/container.dart';
 import 'package:flutter/src/widgets/framework.dart';
 
+import '../constants/color.dart';
+
 class BannerPage extends StatefulWidget {
   const BannerPage({Key? key}) : super(key: key);
 
@@ -70,9 +72,9 @@ class _BannerPageState extends State<BannerPage> {
           height: _current == index ? 8 : 5,
           margin: EdgeInsets.symmetric(horizontal: 4),
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.white),
-            shape: _current == index ? BoxShape.circle : BoxShape.rectangle,
-            color: Colors.red,
+            border: Border.all(color: Colors.grey),
+            shape: _current == index ? BoxShape.circle : BoxShape.circle,
+            color: primaryColor,
           ),
         );
       }).toList(),

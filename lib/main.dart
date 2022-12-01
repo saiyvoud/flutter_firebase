@@ -4,9 +4,18 @@ import 'package:e_commerce_app/pages/auth/login.dart';
 import 'package:e_commerce_app/pages/home/home.dart';
 import 'package:e_commerce_app/pages/splash/bottombar.dart';
 import 'package:e_commerce_app/pages/splash/splash.dart';
+import 'package:e_commerce_app/utils/router.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_navigation/get_navigation.dart';
 
-void main() {
+import 'controller/main_controller.dart';
+
+void main() async {
+  Get.lazyPut<MainController>(() => MainController());
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -15,9 +24,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Bottombars(),
+      home: SplashScreen(),
+      getPages: routes(),
     );
   }
 }
