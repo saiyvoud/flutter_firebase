@@ -48,21 +48,19 @@ class _SplashScreenState extends State<SplashScreen> {
   final auth = FirebaseAuth.instance.currentUser;
   final firebase = FirebaseAuth.instance;
 
-  @override
-  void initState() {
-    super.initState();
-    check();
-  }
-
   void check() async {
-    await firebase.signOut();
+    if (auth == null || auth == "") {
+      Get.offAllNamed("/login");
+    } else {
+      Get.offAllNamed("/bottombar");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Timer(Duration(seconds: 3), () {
-    //   check();
-    // });
+    Timer(Duration(seconds: 3), () {
+      check();
+    });
     return Scaffold(
       body: SingleChildScrollView(
           child: Column(

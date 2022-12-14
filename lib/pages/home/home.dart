@@ -1,12 +1,18 @@
-// ignore_for_file: prefer_const_constructors, unused_field, prefer_final_fields
+// ignore_for_file: prefer_const_constructors, unused_field, prefer_final_fields, prefer_const_literals_to_create_immutables
 
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce_app/components/banner.dart';
+import 'package:e_commerce_app/controller/cart_controller.dart';
+
 import 'package:e_commerce_app/controller/main_controller.dart';
 import 'package:e_commerce_app/pages/home/detail.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
+import '../../components/data.dart';
 import '../../components/loading.dart';
 import '../../constants/color.dart';
 
@@ -18,74 +24,17 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  // @override
-  // void initState() {
-  //   super.initState();
-  //   controller.fetchProducts();
-  // }
-
-  var _icon = [
-    {
-      "icon": "assets/icons/fan.png",
-      "title": "fan",
-    },
-    {
-      "icon": "assets/icons/joystick.png",
-      "title": "game",
-    },
-    {
-      "icon": "assets/icons/menu.png",
-      "title": "menu",
-    },
-    {
-      "icon": "assets/icons/music-player.png",
-      "title": "play",
-    },
-    {
-      "icon": "assets/icons/pocket-camera.png",
-      "title": "camera",
-    },
-    {
-      "icon": "assets/icons/smartphone.png",
-      "title": "phone",
-    },
-    {
-      "icon": "assets/icons/ux.png",
-      "title": "computer",
-    },
-    {
-      "icon": "assets/icons/vr-glasses.png",
-      "title": "vr & ar",
-    },
-  ];
-
-  var img = [
-    {
-      "img": "assets/icons/vr-glasses.png",
-      "title": 'Vr & Ar',
-      "detail": "fsdsdsdsdsdsd",
-      "price": "150,000 Kip"
-    },
-    {
-      "img": "assets/icons/vr-glasses.png",
-      "title": 'Vr & Ar',
-      "detail": "fsdsdsdsdsdsd",
-      "price": "150,000 Kip"
-    },
-    {
-      "img": "assets/icons/vr-glasses.png",
-      "title": 'Vr & Ar',
-      "detail": "fsdsdsdsdsdsd",
-      "price": "150,000 Kip"
-    },
-    {
-      "img": "assets/icons/vr-glasses.png",
-      "title": 'Vr & Ar',
-      "detail": "fsdsdsdsdsdsd",
-      "price": "150,000 Kip"
-    },
-  ];
   final MainController controller = Get.put(MainController());
+  final FirebaseFirestore firestore = FirebaseFirestore.instance;
+  final FirebaseAuth auth = FirebaseAuth.instance;
+  final CartController cartController = Get.put(CartController());
+
+  @override
+  void initState() {
+    super.initState();
+    cartController.getCartHome();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Obx(() {
@@ -112,11 +61,41 @@ class _HomeState extends State<Home> {
               ),
             ),
             actions: [
+              GetBuilder<CartController>(builder: (context) {
+                return Stack(
+                  children: [
+                    Center(
+                      child: InkWell(
+                        onTap: () {
+                          Get.toNamed("/cart");
+                        },
+                        child: Icon(Icons.shopping_cart),
+                      ),
+                    ),
+                    Positioned(
+                      top: 3,
+                      left: 0,
+                      child: Container(
+                        height: 20,
+                        width: 20,
+                        decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(20)),
+                        child: Center(
+                            child: Text("${cartController.listCart.length}")),
+                      ),
+                    ),
+                  ],
+                );
+              }),
               IconButton(
-                onPressed: () {},
+                onPressed: () async {
+                  await controller.logout();
+                  Get.offAllNamed("/login");
+                },
                 color: Colors.white,
-                icon: Icon(Icons.card_travel),
-              )
+                icon: Icon(Icons.exit_to_app),
+              ),
             ],
           ),
           body: SingleChildScrollView(
@@ -131,7 +110,7 @@ class _HomeState extends State<Home> {
                 // color: primaryColor,
                 child: GridView.builder(
                     shrinkWrap: true,
-                    itemCount: _icon.length,
+                    itemCount: icon.length,
                     scrollDirection: Axis.horizontal,
                     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                       crossAxisCount: 2,
@@ -140,11 +119,11 @@ class _HomeState extends State<Home> {
                       return Column(
                         children: [
                           Image.asset(
-                            "${_icon[index]["icon"]}",
+                            "${icon[index]["icon"]}",
                             fit: BoxFit.cover,
                             height: 50,
                           ),
-                          Text("${_icon[index]['title']}")
+                          Text("${icon[index]['title']}")
                         ],
                       );
                     })),
@@ -305,9 +284,21 @@ class _HomeState extends State<Home> {
                                     fit: BoxFit.cover,
                                   ),
                                 ),
-                                Text('${data.name}'),
-                                Text('${data.desc}'),
-                                Text('${data.price}'),
+                                Text(
+                                  '${data.name}',
+                                  overflow: TextOverflow.clip,
+                                ),
+                                Container(
+                                  height: 18,
+                                  child: Text(
+                                    '${data.desc}',
+                                    overflow: TextOverflow.clip,
+                                  ),
+                                ),
+                                Text(
+                                  '${data.price}',
+                                  overflow: TextOverflow.clip,
+                                ),
                               ],
                             ),
                           ),

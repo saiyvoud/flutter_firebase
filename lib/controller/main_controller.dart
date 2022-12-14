@@ -1,7 +1,8 @@
-// ignore_for_file: avoid_print, invalid_return_type_for_catch_error
+// ignore_for_file: avoid_print, invalid_return_type_for_catch_error, avoid_function_literals_in_foreach_calls
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce_app/model/banner_model.dart';
+import 'package:e_commerce_app/model/cart_model.dart';
 import 'package:e_commerce_app/model/product_model.dart';
 import 'package:e_commerce_app/model/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -12,8 +13,11 @@ import 'package:get/get_state_manager/get_state_manager.dart';
 class MainController extends GetxController {
   final FirebaseAuth auth = FirebaseAuth.instance;
   final FirebaseFirestore firestore = FirebaseFirestore.instance;
+
   var isLoading = false.obs;
+  var isCartLoading = false.obs;
   var productList = <ProductModel>[].obs;
+  var cartList = <CartModel>[].obs;
   var bannerList = <BannerModel>[].obs;
   @override
   void onInit() async {
@@ -29,6 +33,14 @@ class MainController extends GetxController {
         // if success go to home page
         Get.offAllNamed("/home");
       }).catchError((e) => {print(e)});
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  logout() async {
+    try {
+      await auth.signOut();
     } catch (e) {
       print(e);
     }
@@ -50,27 +62,6 @@ class MainController extends GetxController {
       });
     } catch (e) {
       print(e);
-    }
-  }
-
-  fetchBanner() async {
-    isLoading(true);
-    try {
-      final QuerySnapshot querySnapshot =
-          await firestore.collection("banner").get();
-      bannerList.clear();
-      for (int i = 0; i < querySnapshot.docs.length; i++) {
-        var banner = querySnapshot.docs[i];
-        bannerList.add(BannerModel(
-            id: banner.id,
-            name: banner["name"],
-            desc: banner["desc"],
-            image: banner["image"]));
-      }
-      isLoading(false);
-      update();
-    } catch (e) {
-      Get.snackbar("Error", "${e.toString()}");
     }
   }
 
@@ -97,4 +88,9 @@ class MainController extends GetxController {
           backgroundColor: Colors.green, colorText: Colors.white);
     }
   }
+
+  // Future<void> remove() async {
+  //   await FirebaseFirestore.instance.collection('favorite').doc().delete();
+  // }
+
 }

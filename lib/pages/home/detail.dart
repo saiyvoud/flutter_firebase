@@ -1,7 +1,11 @@
 // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_commerce_app/model/product_model.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import '../../controller/cart_controller.dart';
 
 class Detail extends StatefulWidget {
   final ProductModel productModel;
@@ -12,59 +16,189 @@ class Detail extends StatefulWidget {
 }
 
 class _DetailState extends State<Detail> {
+  final controller = Get.put(CartController());
+  final userID = FirebaseAuth.instance.currentUser;
+
+  @override
+  void initState() {
+    super.initState();
+    controller.getCartHome();
+  }
+
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.red,
-        title: Text("Product Detail"),
-        centerTitle: true,
-        actions: [
-          IconButton(onPressed: () {}, icon: Icon(Icons.shopping_cart)),
-        ],
-      ),
       bottomNavigationBar: Container(
-          height: 200,
-          decoration: BoxDecoration(color: Colors.red),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              InkWell(
-                onTap: () {},
+          height: 80,
+          decoration: BoxDecoration(color: Colors.white),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: InkWell(
+              onTap: () {
+                controller.addProductToCart(
+                    widget.productModel.id,
+                    userID!.uid,
+                    widget.productModel.name,
+                    widget.productModel.desc,
+                    widget.productModel.price,
+                    widget.productModel.image);
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
                 child: Container(
                   height: 60,
-                  width: 160,
-                  decoration: BoxDecoration(color: Colors.green),
-                  child: Text("Add to Cart"),
+                  decoration: BoxDecoration(
+                    color: Colors.green,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Center(
+                    child: Text(
+                      "Add to Cart",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
                 ),
               ),
-              InkWell(
-                onTap: () {},
-                child: Container(
-                  height: 60,
-                  width: 160,
-                  decoration: BoxDecoration(color: Colors.blue),
-                  child: Text("Buy Now"),
-                ),
-              ),
-            ],
+            ),
           )),
       body: SingleChildScrollView(
           child: Column(
         children: [
+          SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Container(
+                  height: 50,
+                  width: 50,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: IconButton(
+                    icon: Icon(
+                      Icons.arrow_back,
+                      color: Colors.black,
+                    ),
+                    onPressed: () {
+                      Get.back();
+                    },
+                  ),
+                ),
+                GetBuilder<CartController>(builder: (context) {
+                  return Container(
+                    height: 50,
+                    width: 50,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Stack(
+                      children: [
+                        IconButton(
+                          icon: Icon(
+                            Icons.shopping_cart,
+                            color: Colors.black,
+                          ),
+                          onPressed: () {
+                            Get.toNamed("/cart");
+                          },
+                        ),
+                        Positioned(
+                          top: 2,
+                          child: Container(
+                            height: 20,
+                            width: 20,
+                            decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(20),
+                                color: Colors.red),
+                            child: Center(
+                                child: Text(
+                              "${controller.listCart.length}",
+                              style: TextStyle(color: Colors.white),
+                            )),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                }),
+              ],
+            ),
+          ),
           Image.network("${widget.productModel.image}",
               height: 200, fit: BoxFit.cover),
           SizedBox(height: 20),
-          Text(
-            "${widget.productModel.name}",
-            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-          Text(
-            "${widget.productModel.desc}",
-            style: TextStyle(fontSize: 12, color: Colors.grey),
-          ),
-          Row(
-            children: [Text("Price"), Text("${widget.productModel.price}₭")],
+          Container(
+            height: size.height,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(20),
+                topRight: Radius.circular(20),
+              ),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SizedBox(height: 20),
+                  Row(
+                    children: [
+                      Icon(Icons.list_alt),
+                      Text(
+                        "ລາຍລະອຽດສິນຄ້າ",
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    "${widget.productModel.name}",
+                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    "${widget.productModel.desc}",
+                    style: TextStyle(fontSize: 15, color: Colors.grey),
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    "${widget.productModel.price} ₭",
+                    style: TextStyle(
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.red),
+                  ),
+                  SizedBox(height: 10),
+                  Row(
+                    children: [
+                      Icon(Icons.motorcycle),
+                      Text(
+                        "ລາຍລະອຽດການຈັດສົ່ງ",
+                        style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black),
+                      ),
+                    ],
+                  ),
+                  Text(
+                    "ມາລຸ້ນເປັນຜູ້ໂຊກດີທີ່ໄດ້ຮັບຂອງລາງວັນສຸດພິເສດ ສະຫຼອງ ຄົບຮອບ 3 ປີ ຟູດແພນດ້າ ພຽງແຕ່ທ່ານສັ່ງຂັ້ນຕໍ່າ 60,000 ກີບຫຼັງຈາກໃຊ້ສ່ວນຫລຸດ, ທ່ານກໍ່ມີສິດລຸ້ນຮັບຂອງລາງວັນດັ່ງກ່າວແລ້ວ! ຍິ່ງສັ່ງຫຼາຍເທົ່າໃດ ຍິ່ງມີສິດລຸ້ນຮັບຫຼາຍເທົ່ານັ້ນ! 🤩✨",
+                    style: TextStyle(fontSize: 15, color: Colors.grey),
+                  ),
+                ],
+              ),
+            ),
           ),
         ],
       )),
