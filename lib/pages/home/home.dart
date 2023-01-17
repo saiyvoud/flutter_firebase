@@ -30,12 +30,6 @@ class _HomeState extends State<Home> {
   final CartController cartController = Get.put(CartController());
 
   @override
-  void initState() {
-    super.initState();
-    cartController.getCartHome();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Obx(() {
       if (controller.isLoading.value) {
@@ -61,32 +55,37 @@ class _HomeState extends State<Home> {
               ),
             ),
             actions: [
-              GetBuilder<CartController>(builder: (context) {
-                return Stack(
-                  children: [
-                    Center(
-                      child: InkWell(
-                        onTap: () {
-                          Get.toNamed("/cart");
-                        },
-                        child: Icon(Icons.shopping_cart),
+              GetBuilder<CartController>(builder: (cartController) {
+                if (cartController.isCartLoading.value) {
+                  return CircularProgressIndicator();
+                } else {
+                  return Stack(
+                    children: [
+                      Center(
+                        child: InkWell(
+                          onTap: () {
+                            Get.toNamed("/cart");
+                          },
+                          child: Icon(Icons.shopping_cart),
+                        ),
                       ),
-                    ),
-                    Positioned(
-                      top: 3,
-                      left: 0,
-                      child: Container(
-                        height: 20,
-                        width: 20,
-                        decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(20)),
-                        child: Center(
-                            child: Text("${cartController.listCart.length}")),
+                      Positioned(
+                        top: 3,
+                        left: 0,
+                        child: Container(
+                          height: 20,
+                          width: 20,
+                          decoration: BoxDecoration(
+                              color: Colors.red,
+                              borderRadius: BorderRadius.circular(20)),
+                          child: Center(
+                              child: Text(
+                                  "${cartController.listCartModel.length}")),
+                        ),
                       ),
-                    ),
-                  ],
-                );
+                    ],
+                  );
+                }
               }),
               IconButton(
                 onPressed: () async {

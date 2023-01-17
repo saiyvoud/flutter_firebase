@@ -7,7 +7,7 @@ class CartModel {
   final String? price;
   final String? image;
   final String? userID;
-  final String? amount;
+  final int? amount;
 
 // parameter ພາຍໃນ: ຫມາຍເຖິງຕົວປ່ຽນຫລືຂໍ້ມູນທີ່ແທນດ້ວຍຕົວອັກ
   CartModel({

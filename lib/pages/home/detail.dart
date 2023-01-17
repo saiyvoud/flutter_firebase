@@ -20,12 +20,6 @@ class _DetailState extends State<Detail> {
   final userID = FirebaseAuth.instance.currentUser;
 
   @override
-  void initState() {
-    super.initState();
-    controller.getCartHome();
-  }
-
-  @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
@@ -91,43 +85,47 @@ class _DetailState extends State<Detail> {
                     },
                   ),
                 ),
-                GetBuilder<CartController>(builder: (context) {
-                  return Container(
-                    height: 50,
-                    width: 50,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Stack(
-                      children: [
-                        IconButton(
-                          icon: Icon(
-                            Icons.shopping_cart,
-                            color: Colors.black,
+                GetBuilder<CartController>(builder: (cartController) {
+                  if (cartController.isCartLoading.value) {
+                    return CircularProgressIndicator();
+                  } else {
+                    return Container(
+                      height: 50,
+                      width: 50,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Stack(
+                        children: [
+                          IconButton(
+                            icon: Icon(
+                              Icons.shopping_cart,
+                              color: Colors.black,
+                            ),
+                            onPressed: () {
+                              Get.toNamed("/cart");
+                            },
                           ),
-                          onPressed: () {
-                            Get.toNamed("/cart");
-                          },
-                        ),
-                        Positioned(
-                          top: 2,
-                          child: Container(
-                            height: 20,
-                            width: 20,
-                            decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20),
-                                color: Colors.red),
-                            child: Center(
-                                child: Text(
-                              "${controller.listCart.length}",
-                              style: TextStyle(color: Colors.white),
-                            )),
+                          Positioned(
+                            top: 2,
+                            child: Container(
+                              height: 20,
+                              width: 20,
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(20),
+                                  color: Colors.red),
+                              child: Center(
+                                  child: Text(
+                                "${controller.listCartModel.length}",
+                                style: TextStyle(color: Colors.white),
+                              )),
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  );
+                        ],
+                      ),
+                    );
+                  }
                 }),
               ],
             ),

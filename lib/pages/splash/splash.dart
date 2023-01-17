@@ -49,7 +49,7 @@ class _SplashScreenState extends State<SplashScreen> {
   final firebase = FirebaseAuth.instance;
 
   void check() async {
-    if (auth == null || auth == "") {
+    if (auth == null) {
       Get.offAllNamed("/login");
     } else {
       Get.offAllNamed("/bottombar");

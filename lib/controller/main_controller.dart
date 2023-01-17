@@ -29,8 +29,9 @@ class MainController extends GetxController {
     try {
       await auth
           .signInWithEmailAndPassword(email: email, password: password)
-          .then((value) {
+          .then((value) async {
         // if success go to home page
+        onInit();
         Get.offAllNamed("/home");
       }).catchError((e) => {print(e)});
     } catch (e) {
@@ -56,16 +57,17 @@ class MainController extends GetxController {
           "firstname": firstname,
           "lastname": lastname,
           "email": email,
-        }).then((value) => {
-              Get.toNamed("/home"),
-            });
+        }).then((value) async {
+          onInit();
+          Get.toNamed("/home");
+        });
       });
     } catch (e) {
       print(e);
     }
   }
 
-  fetchProducts() async {
+  Future<void> fetchProducts() async {
     isLoading(true);
     try {
       final QuerySnapshot querySnapshot =
